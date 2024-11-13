@@ -1,10 +1,10 @@
 <!-- TODO: Create the theme switcher logic and spinner -->
 <script lang="ts" setup>
-  import { NConfigProvider } from 'naive-ui'
+  import { NConfigProvider, darkTheme, lightTheme } from 'naive-ui'
 </script>
 
 <template>
-  <NConfigProvider>
+  <NConfigProvider :theme="darkTheme">
     <slot />
   </NConfigProvider>
 </template>
