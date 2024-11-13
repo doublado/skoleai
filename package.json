@@ -11,8 +11,17 @@
   },
   "dependencies": {
     "nuxt": "^3.14.159",
+    "nuxtjs-naive-ui": "^1.0.2",
+    "pinia": "^2.2.6",
     "vue": "latest",
     "vue-router": "latest"
   },
-  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
+  "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee",
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@pinia/nuxt": "^0.7.0",
+    "@vicons/ionicons5": "^0.12.0",
+    "naive-ui": "^2.40.1",
+    "pinia-plugin-persistedstate": "^4.1.3"
+  }
 }
