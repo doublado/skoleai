@@ -1,7 +1,6 @@
+<!-- ? Do i need to edit this code to make the theme switcher and spinner work? -->
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    
-  </div>
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
