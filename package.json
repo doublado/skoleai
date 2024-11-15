@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "mysql2": "^3.11.4",
     "nuxt": "^3.14.159",
     "nuxtjs-naive-ui": "^1.0.2",
