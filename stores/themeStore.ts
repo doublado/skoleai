@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 export const useThemeStore = defineStore({
   id: 'useThemeStore',
@@ -7,8 +7,9 @@ export const useThemeStore = defineStore({
   }),
   actions: {
     setDarkMode(value: boolean) {
-      this.isDarkMode = value
+      this.isDarkMode = value;
     },
   },
+  // Persist the theme preference to maintain user settings across sessions
   persist: true,
-})
+});

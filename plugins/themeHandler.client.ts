@@ -1,39 +1,30 @@
-import { useThemeStore } from '@/stores/themeStore'
-import { watch, nextTick } from 'vue'
+import { useThemeStore } from '@/stores/themeStore';
+import { watch } from 'vue';
 
 export default defineNuxtPlugin(() => {
-  const themeStore = useThemeStore()
+  const themeStore = useThemeStore();
 
-  /**
-   * Updates the body class based on the theme mode.
-   * @param {boolean} isDark - Indicates whether dark mode is active.
-   */
   const updateBodyClass = (isDark: boolean) => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return;
 
-    const bodyClass = document.body.classList
+    const bodyClass = document.body.classList;
     if (isDark) {
-      bodyClass.add('dark')
-      bodyClass.remove('light')
+      bodyClass.add('dark');
+      bodyClass.remove('light');
     } else {
-      bodyClass.add('light')
-      bodyClass.remove('dark')
+      bodyClass.add('light');
+      bodyClass.remove('dark');
     }
-  }
+  };
 
-  /**
-   * Sets the initial theme after the window has loaded.
-   */
+  // Ensure the body class reflects the correct theme on initial load and theme changes
   if (typeof window !== 'undefined') {
-    window.addEventListener('load', async () => {
-      updateBodyClass(themeStore.isDarkMode)
-    })
+    window.addEventListener('load', () => {
+      updateBodyClass(themeStore.isDarkMode);
+    });
   }
 
-  /**
-   * Watches for changes in the theme store and updates the body class accordingly.
-   */
   watch(() => themeStore.isDarkMode, (newValue) => {
-    updateBodyClass(newValue)
-  })
-})
+    updateBodyClass(newValue);
+  });
+});
