@@ -1,10 +1,7 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue';
-  import { useThemeStore } from '@/stores/themeStore';
   import { NSpin, NMessageProvider } from 'naive-ui';
 
-  const themeStore = useThemeStore();
-  const isDarkMode = ref(themeStore.isDarkMode);
   const isLoading = ref(true);
 
   // Simulate a loading screen to provide a smoother user experience on initial load
@@ -17,7 +14,7 @@
 
 <template>
   <n-message-provider>
-    <div v-if="isLoading" class="loading-overlay" :class="[isDarkMode ? 'dark' : 'light']">
+    <div v-if="isLoading" class="loading-overlay" :class="'dark'">
       <n-spin size="large" />
     </div>
     <NuxtLayout>

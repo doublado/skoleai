@@ -1,93 +1,3 @@
-/* Light Theme Variables */
-:root {  
-  --text-light: #000000;
-  --bg-light: #faf8f8;
-  --primary-light: #050099;
-  --secondary-light: #6b6be6;
-  --accent-light: #0b0bd5;
-  --textcontrast-light: #64d97b;
-  --bgcontrast-light: #64d97b;
-  --primarycontrast-light: #64d97b;
-  --secondarycontrast-light: #ffdd00;
-  --accentcontrast-light: #64d97b;
-  --text5-light: hsl(0, 0%, 0%, 5%);
-  --text10-light: hsl(0, 0%, 0%, 10%);
-  --text15-light: hsl(0, 0%, 0%, 15%);
-  --text20-light: hsl(0, 0%, 0%, 20%);
-  --text25-light: hsl(0, 0%, 0%, 25%);
-  --text30-light: hsl(0, 0%, 0%, 30%);
-  --text35-light: hsl(0, 0%, 0%, 35%);
-  --text40-light: hsl(0, 0%, 0%, 40%);
-  --text45-light: hsl(0, 0%, 0%, 45%);
-  --text50-light: hsl(0, 0%, 0%, 50%);
-  --text55-light: hsl(0, 0%, 0%, 55%);
-  --text60-light: hsl(0, 0%, 0%, 60%);
-  --text65-light: hsl(0, 0%, 0%, 65%);
-  --text70-light: hsl(0, 0%, 0%, 70%);
-  --text75-light: hsl(0, 0%, 0%, 75%);
-  --text80-light: hsl(0, 0%, 0%, 80%);
-  --text85-light: hsl(0, 0%, 0%, 85%);
-  --text90-light: hsl(0, 0%, 0%, 90%);
-  --text95-light: hsl(0, 0%, 0%, 95%);
-  --primary5-light: hsl(242, 100%, 30%, 5%);
-  --primary10-light: hsl(242, 100%, 30%, 10%);
-  --primary15-light: hsl(242, 100%, 30%, 15%);
-  --primary20-light: hsl(242, 100%, 30%, 20%);
-  --primary25-light: hsl(242, 100%, 30%, 25%);
-  --primary30-light: hsl(242, 100%, 30%, 30%);
-  --primary35-light: hsl(242, 100%, 30%, 35%);
-  --primary40-light: hsl(242, 100%, 30%, 40%);
-  --primary45-light: hsl(242, 100%, 30%, 45%);
-  --primary50-light: hsl(242, 100%, 30%, 50%);
-  --primary55-light: hsl(242, 100%, 30%, 55%);
-  --primary60-light: hsl(242, 100%, 30%, 60%);
-  --primary65-light: hsl(242, 100%, 30%, 65%);
-  --primary70-light: hsl(242, 100%, 30%, 70%);
-  --primary75-light: hsl(242, 100%, 30%, 75%);
-  --primary80-light: hsl(242, 100%, 30%, 80%);
-  --primary85-light: hsl(242, 100%, 30%, 85%);
-  --primary90-light: hsl(242, 100%, 30%, 90%);
-  --primary95-light: hsl(242, 100%, 30%, 95%);
-  --secondary5-light: hsl(240, 71%, 66%, 5%);
-  --secondary10-light: hsl(240, 71%, 66%, 10%);
-  --secondary15-light: hsl(240, 71%, 66%, 15%);
-  --secondary20-light: hsl(240, 71%, 66%, 20%);
-  --secondary25-light: hsl(240, 71%, 66%, 25%);
-  --secondary30-light: hsl(240, 71%, 66%, 30%);
-  --secondary35-light: hsl(240, 71%, 66%, 35%);
-  --secondary40-light: hsl(240, 71%, 66%, 40%);
-  --secondary45-light: hsl(240, 71%, 66%, 45%);
-  --secondary50-light: hsl(240, 71%, 66%, 50%);
-  --secondary55-light: hsl(240, 71%, 66%, 55%);
-  --secondary60-light: hsl(240, 71%, 66%, 60%);
-  --secondary65-light: hsl(240, 71%, 66%, 65%);
-  --secondary70-light: hsl(240, 71%, 66%, 70%);
-  --secondary75-light: hsl(240, 71%, 66%, 75%);
-  --secondary80-light: hsl(240, 71%, 66%, 80%);
-  --secondary85-light: hsl(240, 71%, 66%, 85%);
-  --secondary90-light: hsl(240, 71%, 66%, 90%);
-  --secondary95-light: hsl(240, 71%, 66%, 95%);
-  --accent5-light: hsl(240, 90%, 44%, 5%);
-  --accent10-light: hsl(240, 90%, 44%, 10%);
-  --accent15-light: hsl(240, 90%, 44%, 15%);
-  --accent20-light: hsl(240, 90%, 44%, 20%);
-  --accent25-light: hsl(240, 90%, 44%, 25%);
-  --accent30-light: hsl(240, 90%, 44%, 30%);
-  --accent35-light: hsl(240, 90%, 44%, 35%);
-  --accent40-light: hsl(240, 90%, 44%, 40%);
-  --accent45-light: hsl(240, 90%, 44%, 45%);
-  --accent50-light: hsl(240, 90%, 44%, 50%);
-  --accent55-light: hsl(240, 90%, 44%, 55%);
-  --accent60-light: hsl(240, 90%, 44%, 60%);
-  --accent65-light: hsl(240, 90%, 44%, 65%);
-  --accent70-light: hsl(240, 90%, 44%, 70%);
-  --accent75-light: hsl(240, 90%, 44%, 75%);
-  --accent80-light: hsl(240, 90%, 44%, 80%);
-  --accent85-light: hsl(240, 90%, 44%, 85%);
-  --accent90-light: hsl(240, 90%, 44%, 90%);
-  --accent95-light: hsl(240, 90%, 44%, 95%);
-}
-
 /* Dark Theme Variables */
 :root {
   --text-dark: #ffffff;
@@ -178,19 +88,9 @@
   --accent95-dark: hsl(240, 90%, 56%, 95%);
 }
 
-.light {
-  background-color: var(--bg-light);
-  color: var(--text-light);
-}
-
 .dark {
   background-color: var(--bg-dark);
   color: var(--text-dark);
-}
-
-body.light {
-  background-color: var(--bg-light);
-  color: var(--text-light);
 }
 
 body.dark {

@@ -1,16 +1,6 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import { NConfigProvider, darkTheme, lightTheme } from 'naive-ui';
-  import { useThemeStore } from '@/stores/themeStore';
-
-  const themeStore = useThemeStore();
-  const isDarkMode = ref(themeStore.isDarkMode);
-
-  const lightThemeOverrides = ref<GlobalThemeOverrides>({
-    common: {
-      fontFamily: 'Josefin Sans, sans-serif',
-    },
-  });
+  import { NConfigProvider, darkTheme } from 'naive-ui';
 
   const darkThemeOverrides = ref<GlobalThemeOverrides>({
     common: {
@@ -21,8 +11,8 @@
 
 <template>
   <n-config-provider
-    :theme="isDarkMode ? darkTheme : null"
-    :theme-overrides="isDarkMode ? darkThemeOverrides : lightThemeOverrides"
+    :theme="darkTheme"
+    :theme-overrides="darkThemeOverrides"
   >
     <slot />
   </n-config-provider>
