@@ -43,7 +43,7 @@
             role: response.user.role,
           });
 
-          userStore.setChats(response.chats);
+          userStore.setChats(response.chats); // Ensure this sets the user's chats
 
           router.push('/');
         } else {
