@@ -1,48 +1,124 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import { vAutoAnimate } from '@formkit/auto-animate';
-  import { useUserStore } from '~/stores/userStore';
-  import { NLayout, NLayoutSider, NLayoutContent, NButton, NDivider, NIcon } from 'naive-ui';
-  import { useRouter } from 'vue-router';
+import { ref, computed, watch } from 'vue';
+import { vAutoAnimate } from '@formkit/auto-animate';
+import { useUserStore } from '~/stores/userStore';
+import { format } from 'date-fns';
+import { NLayout, NLayoutSider, NLayoutContent, NButton, NDivider, NIcon, NInput, NAvatar } from 'naive-ui';
+import { useRouter } from 'vue-router';
 
-  // Import icons from vicons with correct names
-  import { HomeOutline, ChatboxOutline, LogOutOutline, ChatbubbleEllipsesOutline, TrashOutline } from '@vicons/ionicons5';
+// Import icons from vicons with correct names
+import { HomeOutline, ChatboxOutline, LogOutOutline, ChatbubbleEllipsesOutline, TrashOutline, SendOutline } from '@vicons/ionicons5';
 
-  // Apply authentication middleware to restrict access to authenticated users only
-  definePageMeta({
-    middleware: 'auth',
-  });
+// Apply authentication middleware to restrict access to authenticated users only
+definePageMeta({
+  middleware: 'auth',
+});
 
-  const userStore = useUserStore();
-  const router = useRouter();
-  const demoChats = ref([{ id: 1, name: new Date().toLocaleString() }]);
+// Get user store instance
+const userStore = useUserStore();
+const router = useRouter();
 
-  // Logout function
-  const logout = () => {
-    userStore.logout();
-    router.push('/login');
-  };
+// Make chat list a computed property so it remains reactive
+const chats = computed(() => userStore.chats);
+const selectedChatId = ref<number | null>(null);
 
-  // Create new chat (students only)
-  const createChat = () => {
-    const newChat = {
-      id: demoChats.value.length + 1,
-      name: new Date().toLocaleString(),
-    };
-    demoChats.value.push(newChat);
-    console.log('New chat created:', newChat.name);
-  };
+// Logout function
+const logout = () => {
+  userStore.logout();
+  router.push('/login');
+};
 
-  // Select a demo chat (for testing purposes)
-  const selectChat = (chatId) => {
-    console.log(`Selected chat with ID: ${chatId}`);
-  };
+// Create new chat (students only)
+const createChat = async () => {
+  try {
+    const response = await $fetch('/api/createChat', {
+      method: 'POST',
+      body: JSON.stringify({ userId: userStore.user.id }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  // Delete a demo chat
-  const deleteChat = (chatId) => {
-    demoChats.value = demoChats.value.filter((chat) => chat.id !== chatId);
-    console.log(`Deleted chat with ID: ${chatId}`);
-  };
+    if (response && response.success) {
+      userStore.setChats([...userStore.chats, response.chat]);
+    }
+  } catch (error) {
+    console.error('Error creating chat:', error);
+  }
+};
+
+// Select a chat
+const selectChat = (chatId: number) => {
+  selectedChatId.value = chatId;
+};
+
+// Delete a chat
+const deleteChat = async (chatId: number) => {
+  try {
+    const response = await $fetch(`/api/deleteChat`, {
+      method: 'POST',
+      body: JSON.stringify({ chatId }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response && response.success) {
+      userStore.setChats(userStore.chats.filter(chat => chat.id !== chatId));
+      if (selectedChatId.value === chatId) {
+        selectedChatId.value = null;
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting chat:', error);
+  }
+};
+
+// Format chat creation date to a more readable format
+const formatDate = (dateString: string) => {
+  return format(new Date(dateString), 'dd/MM/yyyy, HH:mm');
+};
+
+// Placeholder message list for demo purposes
+const messages = ref<{ sender: string; content: string; isAI: boolean }[]>([]);
+
+// Watch for changes to `selectedChatId` to load messages accordingly
+watch(selectedChatId, (newChatId) => {
+  if (newChatId !== null) {
+    messages.value = [
+      { sender: 'AI', content: 'Hello! How can I help you today?', isAI: true },
+    ];
+  } else {
+    messages.value = [];
+  }
+});
+
+// Get selected chat info
+const selectedChat = computed(() => {
+  return chats.value.find(chat => chat.id === selectedChatId.value) || null;
+});
+
+// Sending message to the chat
+const messageContent = ref<string>('');
+const sendMessage = () => {
+  if (messageContent.value.trim() !== '') {
+    messages.value.push({
+      sender: userStore.user.name,
+      content: messageContent.value,
+      isAI: false,
+    });
+    messageContent.value = '';
+
+    // Simulate an AI response for demo purposes
+    setTimeout(() => {
+      messages.value.push({
+        sender: 'AI',
+        content: 'This is an automated response to your message.',
+        isAI: true,
+      });
+    }, 1000);
+  }
+};
 </script>
 
 <template>
@@ -55,7 +131,7 @@
       </div>
 
       <!-- Content Section -->
-      <div class="flex-grow w-full px-4 space-y-4">
+      <div class="flex-grow w-full px-4 space-y-4 overflow-y-auto hide-scrollbar" v-auto-animate>
         <!-- Student-specific content -->
         <template v-if="userStore.user.role === 'student'">
           <!-- Create New Chat Button -->
@@ -70,35 +146,25 @@
             Opret ny chat
           </n-button>
 
-          <!-- Scrollable Chat List with auto-animate and hidden scrollbar -->
-          <div
-            v-auto-animate
-            class="mt-4 overflow-y-auto hide-scrollbar"
-            style="max-height: calc(100vh - 300px);"
-          >
-            <div
-              v-for="chat in demoChats"
-              :key="chat.id"
-              class="flex items-center justify-between mt-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300"
-            >
-              <div class="flex items-center cursor-pointer" @click="selectChat(chat.id)">
-                <n-icon class="mr-2 text-blue-400">
-                  <ChatbubbleEllipsesOutline />
-                </n-icon>
-                <span class="text-sm font-medium">{{ chat.name }}</span>
-              </div>
-              <n-button
-                type="error"
-                ghost
-                size="small"
-                class="hover-button hover:bg-red-600 hover:text-white transition duration-300 ease-in-out"
-                @click="deleteChat(chat.id)"
-              >
-                <n-icon>
-                  <TrashOutline />
-                </n-icon>
-              </n-button>
+          <!-- Scrollable Chat List -->
+          <div v-for="chat in chats" :key="chat.id" class="flex items-center justify-between mt-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300">
+            <div class="flex items-center cursor-pointer" @click="selectChat(chat.id)">
+              <n-icon class="mr-2 text-blue-400">
+                <ChatbubbleEllipsesOutline />
+              </n-icon>
+              <span class="text-sm font-medium">{{ formatDate(chat.created_at) }}</span>
             </div>
+            <n-button
+              type="error"
+              ghost
+              size="small"
+              class="hover-button hover:bg-red-600 hover:text-white transition duration-300 ease-in-out"
+              @click="deleteChat(chat.id)"
+            >
+              <n-icon>
+                <TrashOutline />
+              </n-icon>
+            </n-button>
           </div>
         </template>
       </div>
@@ -123,13 +189,68 @@
     </n-layout-sider>
 
     <!-- Main Content Area -->
-    <n-layout-content class="p-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white overflow-auto">
-      <h1 class="flex items-center text-3xl font-semibold mb-6">
-        <n-icon class="mr-2">
-          <HomeOutline />
-        </n-icon>
-        Velkommen, {{ userStore.user.name }}
-      </h1>
+    <n-layout-content class="p-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col relative h-screen">
+      <div class="flex flex-col overflow-y-auto mb-6 hide-scrollbar" style="flex-grow: 1; padding-bottom: 6rem;">
+        <h1 class="flex items-center text-3xl font-semibold mb-6">
+          <n-icon class="mr-2">
+            <HomeOutline />
+          </n-icon>
+          Velkommen, {{ userStore.user.name }}
+        </h1>
+
+        <!-- Selected Chat Label -->
+        <h2 class="text-xl font-semibold mb-4">
+          <template v-if="selectedChat !== null">
+            Valgt Chat: {{ formatDate(selectedChat.created_at) }}
+          </template>
+          <template v-else>
+            Ingen chat valgt
+          </template>
+        </h2>
+
+        <!-- Chat Messages -->
+        <div class="flex flex-col space-y-4 overflow-y-auto hide-scrollbar" style="flex-grow: 1; padding-bottom: 6rem;">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            class="flex mb-4"
+            :class="{ 'justify-end': !message.isAI }"
+          >
+            <div v-if="message.isAI" class="flex items-start">
+              <n-avatar :size="'small'" :src="'/ai-avatar.png'" class="mr-4" />
+              <div class="bg-gray-300 text-black p-3 rounded-lg max-w-xs">
+                {{ message.content }}
+              </div>
+            </div>
+
+            <!-- User Message Block -->
+            <div v-else class="flex items-start flex-row-reverse">
+              <n-avatar :size="'small'" :src="'/user-avatar.png'" class="ml-4" />
+              <div class="bg-blue-500 text-white p-3 rounded-lg max-w-xs">
+                {{ message.content }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <div v-if="selectedChat !== null" class="w-full bg-gray-100 dark:bg-gray-900 flex items-center fixed bottom-5 left-32 right-0 p-4 box-border justify-center">
+        <div class="flex items-center w-full max-w-4xl space-x-4">
+          <n-input
+            v-model:value="messageContent"
+            placeholder="Skriv en besked..."
+            class="flex-grow"
+            @keydown.enter="sendMessage"
+          />
+          <n-button type="primary" @click="sendMessage">
+            <n-icon>
+              <SendOutline />
+            </n-icon>
+            Send
+          </n-button>
+        </div>
+      </div>
     </n-layout-content>
   </n-layout>
 </template>
@@ -148,6 +269,7 @@
   .hide-scrollbar {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
+    overflow-y: auto; /* Ensure scrolling is available but without visible scrollbar */
   }
   .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
