@@ -13,6 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "mysql2": "^3.11.4",
     "nuxt": "^3.14.1592",
