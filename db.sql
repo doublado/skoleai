@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS chats (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL, -- ID of the user who created the chat
+    deleted BOOLEAN DEFAULT FALSE, -- Flag to indicate if the chat is deleted (soft delete)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
