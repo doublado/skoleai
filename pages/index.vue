@@ -6,29 +6,29 @@
   import { NLayout, NLayoutSider, NLayoutContent, NButton, NDivider, NIcon, NInput, NAvatar } from 'naive-ui';
   import { useRouter } from 'vue-router';
 
-  // Import icons from vicons with correct names
+  // Import icons to provide consistent and meaningful visual cues
   import { HomeOutline, ChatboxOutline, LogOutOutline, ChatbubbleEllipsesOutline, TrashOutline, SendOutline } from '@vicons/ionicons5';
 
-  // Apply authentication middleware to restrict access to authenticated users only
+  // Ensure only authenticated users can access this page
   definePageMeta({
     middleware: 'auth',
   });
 
-  // Get user store instance
+  // Access the user store for user data and authentication status
   const userStore = useUserStore();
   const router = useRouter();
 
-  // Make chat list a computed property so it remains reactive
+  // Reactive state for chat list to reflect changes dynamically
   const chats = computed(() => userStore.chats);
   const selectedChatId = ref<number | null>(null);
 
-  // Logout function
+  // Handle user logout and redirect to the login page
   const logout = () => {
     userStore.logout();
     router.push('/login');
   };
 
-  // Create new chat (students only)
+  // Allows students to create new chats and update the store
   const createChat = async () => {
     try {
       const response = await $fetch<{
@@ -57,13 +57,13 @@
     }
   };
 
-  // Select a chat
+  // Selects a chat and loads its messages
   const selectChat = (chatId: number) => {
     selectedChatId.value = chatId;
     loadMessages(chatId);
   };
 
-  // Delete a chat
+  // Deletes a chat and updates the UI
   const deleteChat = async (chatId: number) => {
     try {
       const response = await $fetch(`/api/deleteChat`, {
@@ -85,15 +85,15 @@
     }
   };
 
-  // Format chat creation date to a more readable format
+  // Formats chat creation dates for better readability
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd/MM/yyyy, HH:mm');
   };
 
-  // Placeholder message list for demo purposes
+  // Placeholder for chat messages to demonstrate functionality
   const messages = ref<{ sender: string; content: string; isAI: boolean }[]>([]);
 
-  // Function to load messages from the server
+  // Fetches and loads messages for a specific chat from the server
   const loadMessages = async (chatId: number) => {
     try {
       const response = await $fetch<{
@@ -122,13 +122,13 @@
     }
   };
 
-  // Sending message to the chat
+  // Sends a message and appends AI's response to the chat
   const messageContent = ref<string>('');
   const sendMessage = async () => {
     if (messageContent.value.trim() !== '') {
       const userMessage = messageContent.value;
 
-      // Add user's message to the chat UI immediately
+      // Display the user's message immediately for a seamless experience
       messages.value.push({
         sender: userStore.user.name,
         content: userMessage,
@@ -163,12 +163,12 @@
     }
   };
 
-  // Get selected chat info
+  // Retrieves the currently selected chat for display
   const selectedChat = computed(() => {
     return chats.value.find(chat => Number(chat.id) === selectedChatId.value) || null;
   });
 
-  // Search logic for admin
+  // Provides chat search functionality for admin users
   const searchQuery = ref<string>('');
   const searchResults = ref<Array<{ id: number; user_name: string; created_at: string }>>([]);
   const isSearching = ref(false);
@@ -204,6 +204,7 @@
     }
   };
 
+  // Selects a chat from search results
   const selectChatFromSearch = (chatId: number) => {
     if (chatId) {
       selectChat(chatId);
@@ -213,18 +214,18 @@
 
 <template>
   <n-layout has-sider class="h-screen">
-    <!-- Sidebar -->
+    <!-- Sidebar for navigation and user-specific actions -->
     <n-layout-sider bordered class="bg-gray-800 text-white w-64 flex flex-col justify-between items-center box-border h-full relative p-4">
-      <!-- Header Section -->
+      <!-- Header Section for the dashboard title -->
       <div class="w-full mb-6 mt-4">
         <h2 class="text-2xl font-bold text-center">Dashboard</h2>
       </div>
 
       <!-- Content Section -->
       <div class="flex-grow w-full px-4 space-y-4 overflow-y-auto hide-scrollbar" v-auto-animate>
-        <!-- Student-specific content -->
+        <!-- Display content specific to students -->
         <template v-if="userStore.user.role === 'student'">
-          <!-- Create New Chat Button -->
+          <!-- Button to create a new chat -->
           <n-button
             type="primary"
             class="w-full transition duration-300 ease-in-out hover:bg-blue-700"
@@ -236,7 +237,7 @@
             Opret ny chat
           </n-button>
 
-          <!-- Scrollable Chat List -->
+          <!-- Scrollable list of student chats -->
           <div v-for="chat in chats" :key="chat.id" class="flex items-center justify-between mt-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300">
             <div class="flex items-center cursor-pointer" @click="selectChat(Number(chat.id))">
               <n-icon class="mr-2 text-blue-400">
@@ -244,6 +245,7 @@
               </n-icon>
               <span class="text-sm font-medium">{{ formatDate(chat.created_at) }}</span>
             </div>
+            <!-- Button to delete a chat -->
             <n-button
               type="error"
               ghost
@@ -258,8 +260,9 @@
           </div>
         </template>
 
-        <!-- Admin-specific content -->
+        <!-- Display content specific to admins -->
         <template v-if="userStore.user.role === 'admin'">
+          <!-- Search bar for admins to search chats -->
           <n-input
             v-model:value="searchQuery"
             placeholder="Søg chats..."
@@ -268,7 +271,7 @@
             clearable
           />
 
-          <!-- Search Results -->
+          <!-- List of search results -->
           <div v-if="searchResults.length > 0" class="space-y-3">
             <div
               v-for="result in searchResults"
@@ -286,19 +289,19 @@
             </div>
           </div>
 
-          <!-- No Results -->
+          <!-- Message displayed when no results are found -->
           <div v-else-if="searchQuery.trim() && !isSearching" class="text-center text-sm text-gray-400">
             Ingen resultater fundet.
           </div>
 
-          <!-- Loading State -->
+          <!-- Loading state while searching -->
           <div v-if="isSearching" class="text-center text-sm text-gray-400">
             Søger...
           </div>
         </template>
       </div>
 
-      <!-- Bottom Section -->
+      <!-- Bottom Section for logout -->
       <div class="w-full px-4 mt-4 absolute bottom-4">
         <n-divider class="border-gray-700 mb-4" />
 
@@ -317,7 +320,7 @@
       </div>
     </n-layout-sider>
 
-    <!-- Main Content Area -->
+    <!-- Main content area for chats and messages -->
     <n-layout-content class="p-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col relative h-screen">
       <div class="flex flex-col overflow-y-auto mb-6 hide-scrollbar" style="flex-grow: 1; padding-bottom: 6rem;">
         <h1 class="flex items-center text-3xl font-semibold mb-6">
@@ -327,7 +330,7 @@
           Velkommen, {{ userStore.user.name }}
         </h1>
 
-        <!-- Selected Chat Label -->
+        <!-- Display the selected chat label -->
         <h2 class="text-xl font-semibold mb-4">
           <template v-if="selectedChat !== null">
             Valgt Chat: {{ formatDate(selectedChat.created_at) }}
@@ -337,7 +340,7 @@
           </template>
         </h2>
 
-        <!-- Chat Messages -->
+        <!-- Chat messages -->
         <div class="flex flex-col space-y-4 overflow-y-auto hide-scrollbar" style="flex-grow: 1; padding-bottom: 6rem;">
           <div
             v-for="(message, index) in messages"
@@ -346,13 +349,14 @@
             :class="{ 'justify-end': !message.isAI }"
           >
             <div v-if="message.isAI" class="flex items-start">
+              <!-- AI message block -->
               <n-avatar :size="'small'" :src="'/img/ai-avatar.png'" class="mr-4" />
               <div class="bg-gray-300 text-black p-3 rounded-lg max-w-xs">
                 {{ message.content }}
               </div>
             </div>
 
-            <!-- User Message Block -->
+            <!-- User message block -->
             <div v-else class="flex items-start flex-row-reverse">
               <n-avatar :size="'small'" :src="'/img/user-avatar.png'" class="ml-4" />
               <div class="bg-blue-500 text-white p-3 rounded-lg max-w-xs">
@@ -363,7 +367,7 @@
         </div>
       </div>
 
-      <!-- Message Input -->
+      <!-- Input area for new messages -->
       <div v-if="selectedChat !== null" class="w-full bg-gray-100 dark:bg-gray-900 flex items-center fixed bottom-5 left-32 right-0 p-4 box-border justify-center">
         <div class="flex items-center w-full max-w-4xl space-x-4">
           <n-input
@@ -385,22 +389,23 @@
 </template>
 
 <style scoped>
+  /* Button styling for hover effects to indicate interactivity */
   .hover-button {
     border: 1px solid transparent;
   }
   .hover-button:hover {
-    border: 1px solid transparent;
-    background-color: var(--n-color-error-hover);
-    color: white;
+    border: 1px solid transparent; /* Prevents border shifting during hover */
+    background-color: var(--n-color-error-hover); /* Enhances visibility on hover */
+    color: white; /* Ensures text is readable on the hover background */
   }
 
-  /* Hide scrollbar but keep scrolling functionality */
+  /* Style to hide scrollbar while maintaining scroll functionality */
   .hide-scrollbar {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-    overflow-y: auto; /* Ensure scrolling is available but without visible scrollbar */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in Internet Explorer 10+ */
+    overflow-y: auto; /* Allows vertical scrolling without displaying the scrollbar */
   }
   .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none; /* Hides scrollbar in Chrome, Safari, and Opera */
   }
 </style>

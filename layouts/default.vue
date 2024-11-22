@@ -2,9 +2,10 @@
   import { ref } from 'vue';
   import { NConfigProvider, darkTheme } from 'naive-ui';
 
+  // Overrides default theme to ensure consistent typography across the application
   const darkThemeOverrides = ref<GlobalThemeOverrides>({
     common: {
-      fontFamily: 'Josefin Sans, sans-serif',
+      fontFamily: 'Josefin Sans, sans-serif', // Custom font for better readability and aesthetics
     },
   });
 </script>
