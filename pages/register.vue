@@ -17,8 +17,21 @@
   const rules = {
     name: { required: true, message: 'Navn er påkrævet', trigger: ['blur', 'input'] },
     email: [
-      { required: true, message: 'E-mail er påkrævet', trigger: ['blur', 'input'] },
-      { type: 'email', message: 'Indtast en gyldig e-mailadresse', trigger: ['blur', 'input'] }
+      { 
+        required: true, 
+        message: 'E-mail er påkrævet', 
+        trigger: ['blur', 'input'] 
+      },
+      {
+        validator: (rule: any, value: string) => {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(value)) {
+            return new Error('Indtast en gyldig e-mailadresse');
+          }
+          return true;
+        },
+        trigger: ['blur', 'input']
+      }
     ],
     password: [
       {
@@ -86,7 +99,7 @@
           <n-input v-model:value="form.name" placeholder="Indtast dit navn" />
         </n-form-item>
         <n-form-item label="E-mail" path="email" class="mb-4">
-          <n-input v-model:value="form.email" type="email" placeholder="Indtast din e-mail" />
+          <n-input v-model:value="form.email" type="text" placeholder="Indtast din e-mail" />
         </n-form-item>
         <n-form-item label="Adgangskode" path="password" class="mb-4">
           <n-input v-model:value="form.password" type="password" placeholder="Indtast din adgangskode" />
