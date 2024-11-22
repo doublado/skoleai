@@ -1,30 +1,31 @@
 import { defineEventHandler, readBody } from 'h3';
-import pool from '../db/mysql'; // Adjust the path to your MySQL connection file
+import pool from '../db/mysql'; // Database connection configuration
 import type { RowDataPacket } from 'mysql2';
 
 interface SearchChatsRequest {
-  query: string;
+  query: string; // The user's search query
 }
 
 interface ChatSearchResult {
-  id: number;
-  user_name: string;
-  created_at: string;
+  id: number; // Chat ID
+  user_name: string; // Name of the user associated with the chat
+  created_at: string; // Timestamp when the chat was created
 }
 
 export default defineEventHandler(async (event) => {
   try {
-    // Read the incoming request body
+    // Read the search query from the incoming request body
     const { query } = await readBody<SearchChatsRequest>(event);
 
     if (!query || query.trim() === '') {
+      // Ensure the search query is not empty to avoid unnecessary database queries
       return {
         success: false,
         message: 'Search query cannot be empty.',
       };
     }
 
-    // Execute the query and typecast the result to RowDataPacket[]
+    // Execute a SQL query to search chats by user name or chat ID
     const [rows] = await pool.query<RowDataPacket[]>(
       `
       SELECT 
@@ -44,21 +45,23 @@ export default defineEventHandler(async (event) => {
         chats.created_at DESC
       LIMIT 20
       `,
-      [`%${query}%`, `%${query}%`]
+      [`%${query}%`, `%${query}%`] // Use wildcards for partial matching
     );
 
-    // Transform RowDataPacket[] into ChatSearchResult[]
+    // Map the database rows into a structured format for the response
     const results: ChatSearchResult[] = rows.map((row) => ({
       id: row.id,
       user_name: row.user_name,
       created_at: row.created_at,
     }));
 
+    // Return the search results to the client
     return {
       success: true,
       results,
     };
   } catch (error) {
+    // Log unexpected errors and return a failure response
     console.error('Error in /api/searchChats:', error);
     return {
       success: false,

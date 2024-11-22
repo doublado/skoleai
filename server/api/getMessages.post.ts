@@ -7,18 +7,19 @@ interface GetMessagesRequest {
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
-    // Parse the request body
+    // Parse the request body to extract the chat ID
     const body = await readBody<GetMessagesRequest>(event);
     const { chatId } = body;
 
     if (!chatId) {
+      // Ensure the chat ID is provided to identify the correct chat
       return {
         success: false,
         message: 'Chat ID is required.',
       };
     }
 
-    // Query the database for messages in the specified chat
+    // Fetch all messages from the specified chat, ordered by creation time
     const query = `
       SELECT sender_type, content, created_at
       FROM messages
@@ -33,6 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       messages: rows,
     };
   } catch (error) {
+    // Log unexpected errors and return an error response
     console.error('Error fetching messages:', error);
     return {
       success: false,
