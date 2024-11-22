@@ -44,7 +44,6 @@
       });
 
       if (response.success && response.chat) {
-        // Convert chat.id to a string before adding to the userStore
         const newChat = {
           ...response.chat,
           id: response.chat.id.toString(),
@@ -93,17 +92,6 @@
 
   // Placeholder message list for demo purposes
   const messages = ref<{ sender: string; content: string; isAI: boolean }[]>([]);
-
-  // Watch for changes to `selectedChatId` to load messages accordingly
-  // watch(selectedChatId, (newChatId) => {
-  //   if (newChatId !== null) {
-  //     messages.value = [
-  //       { sender: 'AI', content: 'Hello! How can I help you today?', isAI: true },
-  //     ];
-  //   } else {
-  //     messages.value = [];
-  //   }
-  // });
 
   // Function to load messages from the server
   const loadMessages = async (chatId: number) => {
@@ -161,7 +149,6 @@
         });
 
         if (response && response.success) {
-          // Add AI's response to the chat UI
           messages.value.push({
             sender: 'AI',
             content: response.message,
@@ -180,6 +167,48 @@
   const selectedChat = computed(() => {
     return chats.value.find(chat => Number(chat.id) === selectedChatId.value) || null;
   });
+
+  // Search logic for admin
+  const searchQuery = ref<string>('');
+  const searchResults = ref<Array<{ id: number; user_name: string; created_at: string }>>([]);
+  const isSearching = ref(false);
+
+  const performSearch = async () => {
+    if (!searchQuery.value.trim()) {
+      searchResults.value = [];
+      return;
+    }
+
+    isSearching.value = true;
+
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        results: Array<{ id: number; user_name: string; created_at: string }>;
+      }>('/api/searchChats', {
+        method: 'POST',
+        body: JSON.stringify({ query: searchQuery.value }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (response.success) {
+        searchResults.value = response.results;
+      } else {
+        searchResults.value = [];
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      searchResults.value = [];
+    } finally {
+      isSearching.value = false;
+    }
+  };
+
+  const selectChatFromSearch = (chatId: number) => {
+    if (chatId) {
+      selectChat(chatId);
+    }
+  };
 </script>
 
 <template>
@@ -226,6 +255,45 @@
                 <TrashOutline />
               </n-icon>
             </n-button>
+          </div>
+        </template>
+
+        <!-- Admin-specific content -->
+        <template v-if="userStore.user.role === 'admin'">
+          <n-input
+            v-model:value="searchQuery"
+            placeholder="Søg chats..."
+            class="w-full mb-4"
+            @input="performSearch"
+            clearable
+          />
+
+          <!-- Search Results -->
+          <div v-if="searchResults.length > 0" class="space-y-3">
+            <div
+              v-for="result in searchResults"
+              :key="result.id"
+              class="flex items-center justify-between bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300"
+            >
+              <div class="flex items-center cursor-pointer" @click="selectChatFromSearch(result.id)">
+                <n-icon class="mr-2 text-blue-400">
+                  <ChatbubbleEllipsesOutline />
+                </n-icon>
+                <span class="text-sm font-medium">
+                  {{ result.user_name }} - {{ formatDate(result.created_at) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Results -->
+          <div v-else-if="searchQuery.trim() && !isSearching" class="text-center text-sm text-gray-400">
+            Ingen resultater fundet.
+          </div>
+
+          <!-- Loading State -->
+          <div v-if="isSearching" class="text-center text-sm text-gray-400">
+            Søger...
           </div>
         </template>
       </div>
