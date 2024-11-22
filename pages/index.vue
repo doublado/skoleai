@@ -1,124 +1,185 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { vAutoAnimate } from '@formkit/auto-animate';
-import { useUserStore } from '~/stores/userStore';
-import { format } from 'date-fns';
-import { NLayout, NLayoutSider, NLayoutContent, NButton, NDivider, NIcon, NInput, NAvatar } from 'naive-ui';
-import { useRouter } from 'vue-router';
+  import { ref, computed, watch } from 'vue';
+  import { vAutoAnimate } from '@formkit/auto-animate';
+  import { useUserStore } from '~/stores/userStore';
+  import { format } from 'date-fns';
+  import { NLayout, NLayoutSider, NLayoutContent, NButton, NDivider, NIcon, NInput, NAvatar } from 'naive-ui';
+  import { useRouter } from 'vue-router';
 
-// Import icons from vicons with correct names
-import { HomeOutline, ChatboxOutline, LogOutOutline, ChatbubbleEllipsesOutline, TrashOutline, SendOutline } from '@vicons/ionicons5';
+  // Import icons from vicons with correct names
+  import { HomeOutline, ChatboxOutline, LogOutOutline, ChatbubbleEllipsesOutline, TrashOutline, SendOutline } from '@vicons/ionicons5';
 
-// Apply authentication middleware to restrict access to authenticated users only
-definePageMeta({
-  middleware: 'auth',
-});
+  // Apply authentication middleware to restrict access to authenticated users only
+  definePageMeta({
+    middleware: 'auth',
+  });
 
-// Get user store instance
-const userStore = useUserStore();
-const router = useRouter();
+  // Get user store instance
+  const userStore = useUserStore();
+  const router = useRouter();
 
-// Make chat list a computed property so it remains reactive
-const chats = computed(() => userStore.chats);
-const selectedChatId = ref<number | null>(null);
+  // Make chat list a computed property so it remains reactive
+  const chats = computed(() => userStore.chats);
+  const selectedChatId = ref<number | null>(null);
 
-// Logout function
-const logout = () => {
-  userStore.logout();
-  router.push('/login');
-};
+  // Logout function
+  const logout = () => {
+    userStore.logout();
+    router.push('/login');
+  };
 
-// Create new chat (students only)
-const createChat = async () => {
-  try {
-    const response = await $fetch('/api/createChat', {
-      method: 'POST',
-      body: JSON.stringify({ userId: userStore.user.id }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  // Create new chat (students only)
+  const createChat = async () => {
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        chat?: { id: number; created_at: string; messages: never[] };
+        message?: string;
+      }>('/api/createChat', {
+        method: 'POST',
+        body: JSON.stringify({ userId: userStore.user.id }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (response && response.success) {
-      userStore.setChats([...userStore.chats, response.chat]);
+      if (response.success && response.chat) {
+        // Convert chat.id to a string before adding to the userStore
+        const newChat = {
+          ...response.chat,
+          id: response.chat.id.toString(),
+        };
+        userStore.setChats([...userStore.chats, newChat]);
+      } else {
+        console.error('Error creating chat:', response.message);
+      }
+    } catch (error) {
+      console.error('Error creating chat:', error);
     }
-  } catch (error) {
-    console.error('Error creating chat:', error);
-  }
-};
+  };
 
-// Select a chat
-const selectChat = (chatId: number) => {
-  selectedChatId.value = chatId;
-};
+  // Select a chat
+  const selectChat = (chatId: number) => {
+    selectedChatId.value = chatId;
+    loadMessages(chatId);
+  };
 
-// Delete a chat
-const deleteChat = async (chatId: number) => {
-  try {
-    const response = await $fetch(`/api/deleteChat`, {
-      method: 'POST',
-      body: JSON.stringify({ chatId }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  // Delete a chat
+  const deleteChat = async (chatId: number) => {
+    try {
+      const response = await $fetch(`/api/deleteChat`, {
+        method: 'POST',
+        body: JSON.stringify({ chatId }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (response && response.success) {
-      userStore.setChats(userStore.chats.filter(chat => chat.id !== chatId));
-      if (selectedChatId.value === chatId) {
-        selectedChatId.value = null;
+      if (response && response.success) {
+        userStore.setChats(userStore.chats.filter(chat => Number(chat.id) !== chatId));
+        if (selectedChatId.value === chatId) {
+          selectedChatId.value = null;
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  };
+
+  // Format chat creation date to a more readable format
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'dd/MM/yyyy, HH:mm');
+  };
+
+  // Placeholder message list for demo purposes
+  const messages = ref<{ sender: string; content: string; isAI: boolean }[]>([]);
+
+  // Watch for changes to `selectedChatId` to load messages accordingly
+  // watch(selectedChatId, (newChatId) => {
+  //   if (newChatId !== null) {
+  //     messages.value = [
+  //       { sender: 'AI', content: 'Hello! How can I help you today?', isAI: true },
+  //     ];
+  //   } else {
+  //     messages.value = [];
+  //   }
+  // });
+
+  // Function to load messages from the server
+  const loadMessages = async (chatId: number) => {
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        messages: Array<{
+          sender_type: 'ai' | 'student';
+          content: string;
+        }>;
+      }>('/api/getMessages', {
+        method: 'POST',
+        body: JSON.stringify({ chatId }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.success) {
+        messages.value = response.messages.map((msg) => ({
+          sender: msg.sender_type === 'ai' ? 'AI' : userStore.user.name,
+          content: msg.content,
+          isAI: msg.sender_type === 'ai',
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  // Sending message to the chat
+  const messageContent = ref<string>('');
+  const sendMessage = async () => {
+    if (messageContent.value.trim() !== '') {
+      const userMessage = messageContent.value;
+
+      // Add user's message to the chat UI immediately
+      messages.value.push({
+        sender: userStore.user.name,
+        content: userMessage,
+        isAI: false,
+      });
+
+      messageContent.value = '';
+
+      try {
+        const response = await $fetch('/api/sendMessage', {
+          method: 'POST',
+          body: JSON.stringify({
+            chatId: selectedChatId.value,
+            userId: userStore.user.id,
+            message: userMessage,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response && response.success) {
+          // Add AI's response to the chat UI
+          messages.value.push({
+            sender: 'AI',
+            content: response.message,
+            isAI: true,
+          });
+        } else {
+          console.error('Error from AI:', response.message);
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
       }
     }
-  } catch (error) {
-    console.error('Error deleting chat:', error);
-  }
-};
+  };
 
-// Format chat creation date to a more readable format
-const formatDate = (dateString: string) => {
-  return format(new Date(dateString), 'dd/MM/yyyy, HH:mm');
-};
-
-// Placeholder message list for demo purposes
-const messages = ref<{ sender: string; content: string; isAI: boolean }[]>([]);
-
-// Watch for changes to `selectedChatId` to load messages accordingly
-watch(selectedChatId, (newChatId) => {
-  if (newChatId !== null) {
-    messages.value = [
-      { sender: 'AI', content: 'Hello! How can I help you today?', isAI: true },
-    ];
-  } else {
-    messages.value = [];
-  }
-});
-
-// Get selected chat info
-const selectedChat = computed(() => {
-  return chats.value.find(chat => chat.id === selectedChatId.value) || null;
-});
-
-// Sending message to the chat
-const messageContent = ref<string>('');
-const sendMessage = () => {
-  if (messageContent.value.trim() !== '') {
-    messages.value.push({
-      sender: userStore.user.name,
-      content: messageContent.value,
-      isAI: false,
-    });
-    messageContent.value = '';
-
-    // Simulate an AI response for demo purposes
-    setTimeout(() => {
-      messages.value.push({
-        sender: 'AI',
-        content: 'This is an automated response to your message.',
-        isAI: true,
-      });
-    }, 1000);
-  }
-};
+  // Get selected chat info
+  const selectedChat = computed(() => {
+    return chats.value.find(chat => Number(chat.id) === selectedChatId.value) || null;
+  });
 </script>
 
 <template>
@@ -148,7 +209,7 @@ const sendMessage = () => {
 
           <!-- Scrollable Chat List -->
           <div v-for="chat in chats" :key="chat.id" class="flex items-center justify-between mt-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-all duration-300">
-            <div class="flex items-center cursor-pointer" @click="selectChat(chat.id)">
+            <div class="flex items-center cursor-pointer" @click="selectChat(Number(chat.id))">
               <n-icon class="mr-2 text-blue-400">
                 <ChatbubbleEllipsesOutline />
               </n-icon>
@@ -159,7 +220,7 @@ const sendMessage = () => {
               ghost
               size="small"
               class="hover-button hover:bg-red-600 hover:text-white transition duration-300 ease-in-out"
-              @click="deleteChat(chat.id)"
+              @click="deleteChat(Number(chat.id))"
             >
               <n-icon>
                 <TrashOutline />
@@ -217,7 +278,7 @@ const sendMessage = () => {
             :class="{ 'justify-end': !message.isAI }"
           >
             <div v-if="message.isAI" class="flex items-start">
-              <n-avatar :size="'small'" :src="'/ai-avatar.png'" class="mr-4" />
+              <n-avatar :size="'small'" :src="'/img/ai-avatar.png'" class="mr-4" />
               <div class="bg-gray-300 text-black p-3 rounded-lg max-w-xs">
                 {{ message.content }}
               </div>
@@ -225,7 +286,7 @@ const sendMessage = () => {
 
             <!-- User Message Block -->
             <div v-else class="flex items-start flex-row-reverse">
-              <n-avatar :size="'small'" :src="'/user-avatar.png'" class="ml-4" />
+              <n-avatar :size="'small'" :src="'/img/user-avatar.png'" class="ml-4" />
               <div class="bg-blue-500 text-white p-3 rounded-lg max-w-xs">
                 {{ message.content }}
               </div>
