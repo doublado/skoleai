@@ -39,3 +39,6 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE INDEX idx_user_id ON chats(user_id);
 CREATE INDEX idx_chat_id ON messages(chat_id);
 CREATE INDEX idx_sender_id ON messages(sender_id);
+
+INSERT INTO users (name, email, password, role)
+VALUES ('AI', 'ai@system', '', 'admin');
