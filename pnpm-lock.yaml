@@ -33,8 +33,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(magicast@0.3.5)(rollup@4.27.2)(vue@3.5.13(typescript@5.6.3))
       openai:
-        specifier: ^4.73.0
-        version: 4.73.0
+        specifier: ^4.73.1
+        version: 4.73.1
       pinia:
         specifier: ^2.2.6
         version: 2.2.6(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3))
@@ -42,8 +42,8 @@ importers:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.6.3)
       vue-router:
-        specifier: ^4.4.5
-        version: 4.4.5(vue@3.5.13(typescript@5.6.3))
+        specifier: ^4.5.0
+        version: 4.5.0(vue@3.5.13(typescript@5.6.3))
     devDependencies:
       '@nuxtjs/tailwindcss':
         specifier: ^6.12.2
@@ -55,8 +55,8 @@ importers:
         specifier: ^0.12.0
         version: 0.12.0
       naive-ui:
-        specifier: ^2.40.1
-        version: 2.40.1(vue@3.5.13(typescript@5.6.3))
+        specifier: ^2.40.2
+        version: 2.40.2(vue@3.5.13(typescript@5.6.3))
       pinia-plugin-persistedstate:
         specifier: ^4.1.3
         version: 4.1.3(@pinia/nuxt@0.7.0(magicast@0.3.5)(rollup@4.27.2)(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(magicast@0.3.5)(pinia@2.2.6(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(rollup@4.27.2)
@@ -2390,8 +2390,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  naive-ui@2.40.1:
-    resolution: {integrity: sha512-3NkL+vLRQZKQxCHXa+7xiD6oM74OrQELaehDkGYRYpr6kjT+JJB+Z7h+5LC70gn8VkbgCAETv0+uRWF+6MLlgQ==}
+  naive-ui@2.40.2:
+    resolution: {integrity: sha512-iOpk9/SdAxOPnbFDiN9c0N6vzRJiyC+xgs8rqeaulLvxg0ix39xA3noordy9wyq0YUbqS3ID6jPdld/kW4KSEg==}
     peerDependencies:
       vue: ^3.0.0
 
@@ -2553,8 +2553,8 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  openai@4.73.0:
-    resolution: {integrity: sha512-NZstV77w3CEol9KQTRBRQ15+Sw6nxVTicAULSjYO4wn9E5gw72Mtp3fAVaBFXyyVPws4241YmFG6ya4L8v03tA==}
+  openai@4.73.1:
+    resolution: {integrity: sha512-nWImDJBcUsqrhy7yJScXB4+iqjzbUEgzfA3un/6UnHFdwWhjX24oztj69Ped/njABfOdLcO/F7CeWTI5dt8Xmg==}
     hasBin: true
     peerDependencies:
       zod: ^3.23.8
@@ -3564,8 +3564,8 @@ packages:
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
 
-  vue-router@4.4.5:
-    resolution: {integrity: sha512-4fKZygS8cH1yCyuabAXGUAsyi1b2/o/OKgu/RUb+znIYOxPRxdkytJEx+0wGcpBE1pX6vUgh5jwWOKRGvuA/7Q==}
+  vue-router@4.5.0:
+    resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -6187,7 +6187,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  naive-ui@2.40.1(vue@3.5.13(typescript@5.6.3)):
+  naive-ui@2.40.2(vue@3.5.13(typescript@5.6.3)):
     dependencies:
       '@css-render/plugin-bem': 0.15.14(css-render@0.15.14)
       '@css-render/vue3-ssr': 0.15.14(vue@3.5.13(typescript@5.6.3))
@@ -6420,13 +6420,13 @@ snapshots:
       unhead: 1.11.11
       unimport: 3.13.2(rollup@4.27.2)
       unplugin: 1.16.0
-      unplugin-vue-router: 0.10.8(rollup@4.27.2)(vue-router@4.4.5(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
+      unplugin-vue-router: 0.10.8(rollup@4.27.2)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
       unstorage: 1.13.1(ioredis@5.4.1)
       untyped: 1.5.1
       vue: 3.5.13(typescript@5.6.3)
       vue-bundle-renderer: 2.1.1
       vue-devtools-stub: 0.1.0
-      vue-router: 4.4.5(vue@3.5.13(typescript@5.6.3))
+      vue-router: 4.5.0(vue@3.5.13(typescript@5.6.3))
     optionalDependencies:
       '@parcel/watcher': 2.5.0
       '@types/node': 22.9.0
@@ -6537,7 +6537,7 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@4.73.0:
+  openai@4.73.1:
     dependencies:
       '@types/node': 18.19.64
       '@types/node-fetch': 2.6.12
@@ -7356,7 +7356,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin-vue-router@0.10.8(rollup@4.27.2)(vue-router@4.4.5(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3)):
+  unplugin-vue-router@0.10.8(rollup@4.27.2)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3)):
     dependencies:
       '@babel/types': 7.26.0
       '@rollup/pluginutils': 5.1.3(rollup@4.27.2)
@@ -7373,7 +7373,7 @@ snapshots:
       unplugin: 1.16.0
       yaml: 2.6.0
     optionalDependencies:
-      vue-router: 4.4.5(vue@3.5.13(typescript@5.6.3))
+      vue-router: 4.5.0(vue@3.5.13(typescript@5.6.3))
     transitivePeerDependencies:
       - rollup
       - vue
@@ -7569,7 +7569,7 @@ snapshots:
 
   vue-devtools-stub@0.1.0: {}
 
-  vue-router@4.4.5(vue@3.5.13(typescript@5.6.3)):
+  vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.13(typescript@5.6.3)
